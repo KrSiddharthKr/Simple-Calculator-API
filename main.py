@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from typing import Optional
 
 app = FastAPI(title="Simple Calculator API", version="1.0.0")
 
@@ -70,3 +71,78 @@ def integer_division(a: int, b: int):
         "quotient": quotient,
         "remainder": remainder
     } 
+
+@app.get("/calculate")
+def calculate_query_parameters(a: int, b: int, operation: str):
+    if operation == "add":
+        result = a+b
+    elif operation == "subtract":
+        result = a-b
+    elif operation == "multiply":
+        result = a*b
+    elif operation == "divide":
+        if b == 0:
+            raise HTTPException(status_code=400, detail="Cannot divide by zero")
+        result = a/b
+    else:
+        raise HTTPException(status_code=400, detail=f"Invalid Operation: {operation}")
+    
+    return {
+        "operation": operation,
+        "a": a,
+        "b": b,
+        "result": result
+    }
+
+@app.get("/calculate_optional")
+def calculate_optional(a: int, b: int = 1, operation: Optional[str] = "add"):
+    # b defaults to 1 if not provided
+    # operation defaults to add if not provided
+    
+    if operation == "add":
+        result = a+b
+    elif operation == "subtract":
+        result = a-b
+    elif operation == "multiply":
+        result = a*b
+    elif operation == "divide":
+        if b==0:
+            raise HTTPException(status_code=400, detail="Cannot divide by zero")
+        result = a/b
+    else:
+        raise HTTPException(status_code=400, detail=f"Invalid Operation: {operation}")
+    
+    return {
+        "operation": operation,
+        "a": a,
+        "b": b,
+        "result": result
+    }
+
+@app.get("/calculate_advanced")
+def calculate_advanced(a: int, b: int, operation: Optional[str] = "add"):
+    valid_operations = ["add", "subtract", "multiply", "divide"]
+    if operation not in valid_operations:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid operation: '{operation}'. Valid operations are: {valid_operations}"
+        )
+    
+    if operation == "add":
+        result = a+b
+    elif operation == "subtract":
+        result = a-b
+    elif operation == "multiply":
+        result = a*b
+    elif operation == "divide":
+        if b==0:
+            raise HTTPException(status_code=400, detail="Cannot divide by zero")
+        result = a/b
+    
+    return {
+        "operation": operation,
+        "a": a,
+        "b": b,
+        "result": result,
+        "valid_operations": valid_operations 
+    }
