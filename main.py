@@ -1,7 +1,56 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional
+from pydantic import BaseModel
 
 app = FastAPI(title="Simple Calculator API", version="1.0.0")
+
+# A simple Python class (without Pydantic) , this shows why Pydantic is needed
+# class Person:
+#     def __init__(self, name, age):
+#         self.name = name
+#         self.age = age
+
+# # Creating an object from the class
+# person1 = Person("Alice", 25)
+# person2 = Person("Alice", "not_a_number")
+# print(person1.name)  # Alice
+# print(person1.age)   # 25
+# print(person2.name)  # Alice
+# print(person2.age)   # 25
+
+class CalculationRequest(BaseModel):
+    a: int
+    b: int
+    operation: str
+    precision: Optional[int] = 2
+    
+# METHOD - 1
+# request = CalculationRequest(a=10, b=5, operation="add", precision=3)
+# print(request.a)
+# print(request.b)
+# print(request.operation)
+# print(request.precision)
+
+# METHOD - 2
+# data = {"a": "10", "b": "5", "operation": "add"}
+# data = {"a": "10", "operation": "add"}
+# request = CalculationRequest(**data)
+# request.a = 345
+# request.b = 9025
+# print(request.a)
+# print(request.b)
+# print(request.operation)
+# print(request.precision)
+
+# print("Original:", request.a)
+
+# # Now try to modify it
+# try:
+#     request.a = 999
+#     print("Modified:", request.a)
+# except Exception as e:
+#     print("Error when trying to modify:", e)
+
 
 @app.get("/")
 def read_root():
@@ -146,3 +195,5 @@ def calculate_advanced(a: int, b: int, operation: Optional[str] = "add"):
         "result": result,
         "valid_operations": valid_operations 
     }
+    
+# @app.post("/calculate")
